@@ -1,0 +1,24 @@
+server:
+  port: 4992
+  servlet:
+    context-path: /
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+debug: false
+
+spring:
+  profiles:
+    active: local
+  jackson:
+    time-zone: Asia/Seoul
+  output:
+    ansi:
+      enabled: ALWAYS
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /docs

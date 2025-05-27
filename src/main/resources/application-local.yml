@@ -1,0 +1,19 @@
+# JPA Properties
+spring:
+  config:
+    activate:
+      on-profile: local
+  jpa:
+    properties:
+      hibernate:
+        default_batch_fetch_size: 1000
+    show-sql: true
+    database: postgresql
+    hibernate:
+      ddl-auto: update
+    generate-ddl: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://192.168.50.254:15432/roadaddr
+    username: egis_server
+    password: EgisDB0700
