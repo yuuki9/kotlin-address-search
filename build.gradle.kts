@@ -42,7 +42,8 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 	implementation("org.locationtech.jts:jts-core:1.19.0")
 
-	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
+	implementation("org.springframework.data:spring-data-elasticsearch")
+	implementation("org.elasticsearch:elasticsearch:7.17.10")
 }
 
 kotlin {

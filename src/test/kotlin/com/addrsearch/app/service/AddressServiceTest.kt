@@ -23,26 +23,30 @@ class AddressServiceTest {
 
         val mockResult = listOf(
             Address(
+                id="1",
                 sido = "서울특별시",
                 sigungu = "서초구",
-                roadName = "서초대로",
+                road_name = "서초대로",
                 dong = "방배동",
-                buildingName = null,
+                building_name = null,
+                full_road = "서울특별시 서초구 서초대로",
                 buildingNumberSub = null,
                 buildingNumberMain = null,
-                zipCode = null,
+                zip_code = null,
                 adminCode = null,
                 location = GeoPoint(126.4593, 34.4593)
             ),
             Address(
+                id="2",
                 sido = "서울특별시",
                 sigungu = "서초구",
-                roadName = "서초대로",
+                road_name = "서초대로",
                 dong = "방배1동",
-                buildingName = null,
+                building_name = null,
                 buildingNumberSub = null,
                 buildingNumberMain = null,
-                zipCode = null,
+                full_road = "서울특별시 서초구 서초대로",
+                zip_code = null,
                 adminCode = null,
                 location = GeoPoint(126.4593, 34.4593)
             )
@@ -66,14 +70,15 @@ class AddressServiceTest {
         val lat = 34.4593
 
         val mockAddress =   Address(
+            id="1",
             sido = "서울특별시",
             sigungu = "서초구",
-            roadName = "서초대로",
+            road_name = "서초대로",
             dong = "방배1동",
-            buildingName = null,
+            building_name = null,
             buildingNumberSub = null,
             buildingNumberMain = null,
-            zipCode = null,
+            zip_code = null,
             adminCode = null,
             location = GeoPoint(126.4593, 34.4593)
         )

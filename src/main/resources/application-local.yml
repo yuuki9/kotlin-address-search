@@ -18,4 +18,4 @@ spring:
     username: egis_server
     password: EgisDB0700
   elasticsearch:
-    hosts: http://192.168.50.254:9200
+    uris: http://192.168.50.254:9200
