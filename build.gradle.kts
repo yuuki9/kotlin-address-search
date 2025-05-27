@@ -40,6 +40,8 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 	implementation("org.locationtech.jts:jts-core:1.19.0")
+
+	implementation("org.springframework.boot:spring-boot-starter-data-elasticsearch")
 }
 
 kotlin {

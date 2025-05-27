@@ -17,3 +17,5 @@ spring:
     url: jdbc:postgresql://192.168.50.254:15432/roadaddr
     username: egis_server
     password: EgisDB0700
+  elasticsearch:
+    hosts: http://192.168.50.254:9200
