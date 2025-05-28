@@ -1,8 +1,10 @@
-package com.addrsearch.app.service
+package com.addrsearch.app.unit.service
 
 import com.addrsearch.app.domain.Address
 import com.addrsearch.app.domain.GeoPoint
 import com.addrsearch.app.repository.AddressSearchRepository
+import com.addrsearch.app.service.GeoAddressSearchServiceImpl
+import com.addrsearch.app.service.KeywordAddressSearchServiceImpl
 import org.junit.jupiter.api.Test
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever

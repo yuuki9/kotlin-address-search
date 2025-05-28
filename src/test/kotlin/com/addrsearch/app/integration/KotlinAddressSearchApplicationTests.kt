@@ -1,4 +1,4 @@
-package com.addrsearch.app
+package com.addrsearch.app.integration
 
 import com.addrsearch.app.service.KeywordAddressSearchServiceImpl
 import org.junit.jupiter.api.Test
@@ -20,7 +20,7 @@ class KotlinAddressSearchApplicationTests {
 		val results = keywordAddressSearchService.execute(keyword)
 
 		// then
-		assertTrue(results.any { it.fullAddress.contains("서초대로") })
+        assertTrue(results.any { it.fullAddress.contains("서초대로") })
 	}
 
 }
