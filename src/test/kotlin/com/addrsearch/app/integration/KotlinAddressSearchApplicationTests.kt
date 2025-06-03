@@ -23,4 +23,5 @@ class KotlinAddressSearchApplicationTests {
         assertTrue(results.any { it.fullAddress.contains("서초대로") })
 	}
 
+
 }
