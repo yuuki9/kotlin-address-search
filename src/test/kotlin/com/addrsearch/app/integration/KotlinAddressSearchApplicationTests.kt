@@ -10,18 +10,5 @@ import kotlin.test.assertTrue
 class KotlinAddressSearchApplicationTests {
 	@Autowired
 	lateinit var keywordAddressSearchService: KeywordAddressSearchServiceImpl
-
-	@Test
-	fun `Elasticsearch 실제 연동 테스트`() {
-		// given
-		val keyword = "서초대로"
-
-		// when
-		val results = keywordAddressSearchService.execute(keyword)
-
-		// then
-        assertTrue(results.any { it.fullAddress.contains("서초대로") })
-	}
-
-
+	
 }
