@@ -81,13 +81,13 @@ class AddressSearchCustomImpl(
                     }
                 }
             }
-            .withSort { sort ->
-                sort.geoDistance { gd ->
-                    gd.field("location")  // geo_point 필드명 (예: location)
-                    gd.order(SortOrder.Asc)  // 가까운 순서 오름차순
-                    gd.unit(DistanceUnit.Kilometers)
-                }
-            }
+//            .withSort { sort ->
+//                sort.geoDistance { gd ->
+//                    gd.field("location")  // geo_point 필드명 (예: location)
+//                    gd.order(SortOrder.Asc)  // 가까운 순서 오름차순
+//                    gd.unit(DistanceUnit.Kilometers)
+//                }
+//            }
             .withPageable(PageRequest.of(0, 20)) // size: 20
             .build()
         val searchHits = elasticsearchOperations.search(query, Address::class.java)
