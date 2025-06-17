@@ -7,7 +7,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType
 import org.springframework.data.elasticsearch.annotations.InnerField
 import org.springframework.data.elasticsearch.annotations.MultiField
 
-@Document(indexName = "korean_addresses_v2")
+@Document(indexName = "korean_addresses_v3")
 data class Address(
     @Id
     val id: String,
