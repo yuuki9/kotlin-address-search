@@ -1,8 +1,10 @@
 package com.addrsearch.app.repository
 
 import com.addrsearch.app.dto.AddressSearchResponse
-import com.addrsearch.app.dto.ReverseGeocodeResponse
+import com.addrsearch.app.dto.SidoResponse
+import com.addrsearch.app.dto.SigunguResponse
 import org.springframework.jdbc.core.JdbcTemplate
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate
 import org.springframework.stereotype.Repository
 
 
@@ -10,6 +12,51 @@ import org.springframework.stereotype.Repository
 class AddressRepository(
     private val jdbcTemplate: JdbcTemplate
 ) {
+
+    fun sidoList(): List<SidoResponse> {
+        val sql = """
+        SELECT id ,ctp_kor_nm, ST_AsText(geom) AS geom
+        FROM tl_scco_ctprvn
+        ORDER BY ctp_kor_nm ASC;
+    """.trimIndent()
+
+        return jdbcTemplate.query(sql) { rs, _ ->
+            val name = rs.getString("ctp_kor_nm")
+            val geom = rs.getString("geom")
+            val id = rs.getLong("id")
+
+            SidoResponse(
+                id = id, name = name
+                // 필요하면 geom도 DTO에 추가
+            )
+        }
+    }
+
+    fun sigunguList(id: Long): List<SigunguResponse> {
+        val sql = """
+        SELECT li.id, li.sig_kor_nm, li.geom
+        FROM tl_scco_sig li
+        JOIN tl_scco_ctprvn si
+          ON ST_Intersects(li.geom, si.geom)
+        WHERE si.id = :id
+        ORDER BY li.sig_kor_nm ASC;
+    """.trimIndent()
+
+        val params = mapOf("id" to id)
+
+        return jdbcTemplate.dataSource?.let { NamedParameterJdbcTemplate(it) }!!.query(sql, params) { rs, _ ->
+            val sigId = rs.getLong("id")
+            val sigName = rs.getString("sig_kor_nm")
+            val geom = rs.getString("geom")
+
+            SigunguResponse(
+                id = sigId,
+                name = sigName
+            )
+        }
+    }
+
+
     fun findRegionByCoordinatesDong(lon: Double, lat: Double): Pair<String, String> {
         val sql = """
         SELECT emd_kor_nm, ST_AsText(geom) AS geom
@@ -23,6 +70,7 @@ class AddressRepository(
             Pair(name, geom)
         } ?: throw NoSuchElementException("위치 정보가 없습니다.")
     }
+
 
     fun findRegionByCoordinatesSi(lon: Double, lat: Double): Pair<String, String> {
         val sql = """
@@ -72,9 +120,7 @@ class AddressRepository(
             ).filterNotNull().filter { it.isNotBlank() }
 
             AddressSearchResponse(
-                fullAddress = parts.joinToString(" "),
-                x = rs.getDouble("xcoord"),
-                y = rs.getDouble("ycoord")
+                fullAddress = parts.joinToString(" "), x = rs.getDouble("xcoord"), y = rs.getDouble("ycoord")
             )
         }
     }
@@ -94,9 +140,7 @@ class AddressRepository(
 
         return jdbcTemplate.query(sql) { rs, _ ->
             SkywaySegment(
-                code = rs.getString("cor_id"),
-                latitude = rs.getDouble("seg_ltt"),
-                longitude = rs.getDouble("seg_lnt")
+                code = rs.getString("cor_id"), latitude = rs.getDouble("seg_ltt"), longitude = rs.getDouble("seg_lnt")
             )
         }
     }
@@ -113,9 +157,7 @@ class AddressRepository(
 
         return jdbcTemplate.query(sql) { rs, _ ->
             SkywaySegment(
-                code = rs.getString("vrt_id"),
-                latitude = rs.getDouble("vrt_ltt"),
-                longitude = rs.getDouble("vrt_lnt")
+                code = rs.getString("vrt_id"), latitude = rs.getDouble("vrt_ltt"), longitude = rs.getDouble("vrt_lnt")
             )
         }
     }
@@ -124,7 +166,5 @@ class AddressRepository(
 }
 
 data class SkywaySegment(
-    val latitude: Double,
-    val longitude: Double,
-    val code: String
+    val latitude: Double, val longitude: Double, val code: String
 )

@@ -1,0 +1,72 @@
+image: gradle:8.5-jdk17
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+cache:
+  paths:
+  - .gradle/wrapper
+  - .gradle/caches
+
+stages:
+- package
+- docker_build
+- start
+- release
+
+gradle_package:
+  stage: package
+  only:
+  - master
+  - develop
+  tags:
+  - 254_Gradle
+  script:
+  - gradle BootJar
+  - mkdir sdsp-openapi/
+  - cp build/libs/*.jar sdsp-openapi/
+  artifacts:
+    paths:
+    - sdsp-openapi/*.jar
+
+docker_build:
+  stage: docker_build
+  only:
+  - master
+  - develop
+  tags:
+  - 254_Shell
+  script:
+  - cp Dockerfile sdsp-openapi
+  - cd sdsp-openapi
+  - docker build --no-cache -t sdsp-openapi:latest .
+  artifacts:
+    paths:
+    - sdsp-openapi/*.tar
+
+job-start:
+  stage: start
+  only:
+  - master
+  - develop
+  tags:
+  - 254_Shell
+  script:
+  - docker-compose -f docker-compose.sdsp-openapi.yml down
+  - docker-compose -f docker-compose.sdsp-openapi.yml up -d
+  when: delayed
+  start_in: 2 second
+
+job-release:
+  stage: release
+  only:
+  - master
+  - develop
+  tags:
+  - 254_Shell
+  script:
+  - docker commit sdsp-openapi
+  - docker save -o /home/sdsp/sdsp-openapi.tar sdsp-openapi
+  - chmod 755 /home/sdsp/sdsp-openapi.tar
+  when: delayed
+  start_in: 2 second
