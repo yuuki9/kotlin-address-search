@@ -6,12 +6,15 @@ import co.elastic.clients.elasticsearch._types.SortOrder
 import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType
 import com.addrsearch.app.domain.Address
+import com.addrsearch.app.dto.AddressResponse
 import org.elasticsearch.common.geo.GeoPoint
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.elasticsearch.client.elc.NativeQuery
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations
 import org.springframework.stereotype.Repository
 import org.elasticsearch.index.query.MultiMatchQueryBuilder.Type
+import java.io.File
+
 @Repository
 class AddressSearchCustomImpl(
     private val elasticsearchOperations: ElasticsearchOperations
@@ -38,60 +41,55 @@ class AddressSearchCustomImpl(
     }
 
     override fun searchByKeyword(keyword: String): List<Address> {
+
+        // 2. 기존 multiMatch 검색
         val query = NativeQuery.builder()
             .withQuery { q ->
-                q.functionScore { fs ->
-                    fs.query { fq ->
-                        fq.bool { bq ->
-                            bq.should { s ->
-                                s.multiMatch { mm ->
-                                    mm.query(keyword)
-                                    mm.type(TextQueryType.BoolPrefix)
-                                    mm.fields(
-                                        "sido.text^5",
-                                        "sigungu.text^4",
-                                        "road_name^3",
-                                        "building_name^2",
-                                        "dong"
-                                    )
-                                }
-                            }
-                            bq.should { s ->
-                                s.term { t ->
-                                    t.field("sigungu")
-                                    t.value(keyword)
-                                    t.boost(10.0f)
-                                }
-                            }
-                            bq.should { s ->
-                                s.term { t ->
-                                    t.field("dong")
-                                    t.value(keyword)
-                                    t.boost(9.0f)
-                                }
-                            }
-                            bq.should { s ->
-                                s.term { t ->
-                                    t.field("building_name.keyword")
-                                    t.value(keyword)
-                                    t.boost(8.0f)
-                                }
-                            }
-                        }
-                    }
+                q.multiMatch { mm ->
+                    mm.query(keyword)
+                    mm.fields(
+                        "sido^5",
+                        "sigungu^4",
+                        "dong^4",
+                        "road_name^3",
+                        "building_name^2",
+                        "full_address"
+                    )
+                    mm.type(TextQueryType.BoolPrefix)
                 }
             }
-//            .withSort { sort ->
-//                sort.geoDistance { gd ->
-//                    gd.field("location")  // geo_point 필드명 (예: location)
-//                    gd.order(SortOrder.Asc)  // 가까운 순서 오름차순
-//                    gd.unit(DistanceUnit.Kilometers)
-//                }
-//            }
-            .withPageable(PageRequest.of(0, 20)) // size: 20
+            .withPageable(PageRequest.of(0, 20))
             .build()
-        val searchHits = elasticsearchOperations.search(query, Address::class.java)
 
-        return searchHits.map { it.content }.toList()
+        val searchHits = elasticsearchOperations.search(query, Address::class.java)
+            .map { it.content }
+            .distinctBy { it.full_address }
+            .toMutableList()
+
+        // 3. 정확 일치가 있으면 최상단에 sido 값만 담은 객체 추가
+//        exactHit?.let {
+//            print(it.sido.toString())
+//            val topAddress = it.copy(
+//                sigungu = "",
+//                dong = "",
+//                road_name = "",
+//                building_name = "",
+//                full_address = it.sido
+//            )
+//            searchHits.add(0, topAddress)
+//        }
+
+        return searchHits
+    }
+
+    private fun readCsvAsMap(filePath: String): HashMap<String, String> {
+        val map = hashMapOf<String, String>()
+        File(filePath).forEachLine { line ->
+            val parts = line.split(",")
+            if (parts.size >= 2) {
+                map[parts[0]] = parts[1] // 첫 번째 컬럼을 키, 두 번째를 값
+            }
+        }
+        return map
     }
 }

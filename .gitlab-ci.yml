@@ -23,11 +23,11 @@ gradle_package:
   - 254_Gradle
   script:
   - gradle BootJar
-  - mkdir sdsp-openapi/
-  - cp build/libs/*.jar sdsp-openapi/
+  - mkdir sdsp-address/
+  - cp build/libs/*.jar sdsp-address/
   artifacts:
     paths:
-    - sdsp-openapi/*.jar
+    - sdsp-address/*.jar
 
 docker_build:
   stage: docker_build
@@ -37,12 +37,12 @@ docker_build:
   tags:
   - 254_Shell
   script:
-  - cp Dockerfile sdsp-openapi
-  - cd sdsp-openapi
-  - docker build --no-cache -t sdsp-openapi:latest .
+  - cp Dockerfile sdsp-address
+  - cd sdsp-address
+  - docker build --no-cache -t sdsp-address:latest .
   artifacts:
     paths:
-    - sdsp-openapi/*.tar
+    - sdsp-address/*.tar
 
 job-start:
   stage: start
@@ -52,8 +52,8 @@ job-start:
   tags:
   - 254_Shell
   script:
-  - docker-compose -f docker-compose.sdsp-openapi.yml down
-  - docker-compose -f docker-compose.sdsp-openapi.yml up -d
+  - docker-compose -f docker-compose.sdsp-address.yml down
+  - docker-compose -f docker-compose.sdsp-address.yml up -d
   when: delayed
   start_in: 2 second
 
@@ -61,12 +61,11 @@ job-release:
   stage: release
   only:
   - master
-  - develop
   tags:
   - 254_Shell
   script:
-  - docker commit sdsp-openapi
-  - docker save -o /home/sdsp/sdsp-openapi.tar sdsp-openapi
-  - chmod 755 /home/sdsp/sdsp-openapi.tar
+  - docker commit sdsp-address
+  - docker save -o /home/sdsp/sdsp-address.tar sdsp-openapi
+  - chmod 755 /home/sdsp/sdsp-address.tar
   when: delayed
   start_in: 2 second
