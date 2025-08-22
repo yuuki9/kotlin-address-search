@@ -18,6 +18,7 @@ class GeoAddressSearchServiceImpl(
 ) : GeoAddressSearchService {
     override fun execute(lon: Double, lat: Double): ReverseGeocodeResponse {
         val si = addressRepository.findRegionByCoordinatesSi(lon, lat)
+
         val corridor = addressRepository.findCoordinatesWithCorridorCode()
         val vertiport = addressRepository.findCoordinatesWithVertiportCode()
         corridor.addAll(vertiport)
@@ -27,6 +28,7 @@ class GeoAddressSearchServiceImpl(
         val wktReader = WKTReader()
         val regionGeom: Geometry = wktReader.read(wkt)
 
+        println(wkt)
         val geometryFactory = GeometryFactory()
         val includedCodes = mutableListOf<String>()
 
@@ -37,9 +39,12 @@ class GeoAddressSearchServiceImpl(
             }
         }
 
+        println(result)
+
         return ReverseGeocodeResponse(
             address = "${result!!.sido} ${result.sigungu} ${result.dong}",
             code = includedCodes.toSet().toList(),
+            wkt = regionGeom.toString(),
             x = lon,
             y = lat
         )

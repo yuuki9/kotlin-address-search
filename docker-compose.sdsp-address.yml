@@ -2,14 +2,9 @@ version: '3.7'
 
 services:
   sdspopenapi:
-    container_name: sdsp-openapi
+    container_name: sdsp-address
     restart: unless-stopped
-    image: sdsp-openapi:latest
-    environment:
-    - SPRING_PROFILES_ACTIVE=dev
-    volumes:
-      - /data/sdsp/netcdf/storage:/netcdf/storage/
-      - /data/sdsp/netcdf/export:/netcdf/export/
+    image: sdsp-address:latest
     ports:
-      - '4994:4994'
+      - '4992:4992'
 

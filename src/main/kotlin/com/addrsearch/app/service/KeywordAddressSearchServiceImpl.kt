@@ -10,12 +10,13 @@ class KeywordAddressSearchServiceImpl(
 ) : KeywordAddressSearchService {
     override fun execute(keyword: String): List<AddressSearchResponse> {
         return addressSearchRepository.searchByKeyword(keyword)
-            .filter { it.full_road != null }
+            .filter { it.full_address != null }
             .map {
                 AddressSearchResponse(
-                    fullAddress = it.full_road!!,
-                    x = it.location.lon,
-                    y = it.location.lat
+                    fullAddress = it.full_address!!,
+                    buildingName = it.building_name,
+                    x = it.location!!.lon!!,
+                    y = it.location!!.lat!!
                 )
             }
     }
